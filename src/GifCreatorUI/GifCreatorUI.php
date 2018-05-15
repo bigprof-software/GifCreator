@@ -57,8 +57,14 @@
 			$dist = 3 * $r; // distance between centers
 			$cx = intval($width / 2 - ($dist * ($total - 1)) / 2); // x-coord for 1st indicator
 			$cy = $height - 3 * $r; // y-coord for indicators
-			$color = imagecolorallocate($img, 0xDD, 0xDD, 0xDD);
-			$white = imagecolorallocate($img, 0xFF, 0xFF, 0xFF);
+			
+			// try to get indicator colors from existing pallette, or nearest if not found
+			// this should minimize new colors added to pallette, thus avoiding degrading
+			// image quality as we only have 255 possible colors
+			$color = imagecolorexact($img, 0xDD, 0xDD, 0xDD);
+			$white = imagecolorexact($img, 0xFF, 0xFF, 0xFF);
+			if($color == -1) $color = imagecolorclosest($img, 0xDD, 0xDD, 0xDD);
+			if($white == -1) $white = imagecolorclosest($img, 0xFF, 0xFF, 0xFF);
 			
 			for($n = 0; $n < $total; $n++) {
 				imagefilledarc($img, $cx, $cy, $r * 2, $r * 2, 0, 360, $color, IMG_ARC_PIE);
